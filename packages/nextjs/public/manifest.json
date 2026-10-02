@@ -1,5 +1,5 @@
 {
-  "name": "Scaffold-ETH 2 DApp",
-  "description": "A DApp built with Scaffold-ETH",
+  "name": "MonadFind",
+  "description": "A decentralized lost-and-found application on Monad.",
   "iconPath": "logo.svg"
 }

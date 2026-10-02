@@ -1,95 +1,100 @@
-# 🏗 Scaffold-ETH-Monad
+# MonadFind
 
-<div align="center">
-<img src=".github/assets/hero_image.png" />
-</div>
+> A trust-minimized lost-and-found dApp built on Monad.
 
-<h4 align="center">
-  <a href="https://docs.monad.xyz">Documentation</a>
-  | <a href="https://github.com/monad-developers/scaffold-eth-monad/issues">Report Issue</a>
+## What is MonadFind?
 
-</h4>
+MonadFind is a decentralized lost-and-found application where users can report lost/found items, lock a MON reward in a smart contract, and allow a claimant to receive the reward after providing the required ownership proof. 
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+The smart contract verifies possession of the secret/proof commitment supplied by the creator, ensuring the reward can only be claimed by the legitimate person holding the secret.
 
--   ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
--   🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
--   🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
--   🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
--   🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## How it works
 
-![Front Page](.github/assets/front_page.png)
+1. Creator reports an item.
+2. Creator deposits a MON reward into the smart contract.
+3. The item and proof commitment are recorded on-chain.
+4. A claimant submits the required proof.
+5. The smart contract verifies the proof.
+6. The reward is released automatically.
+7. The item changes from OPEN to RETURNED.
 
-## Requirements
+## Why blockchain?
 
-Before you begin, you need to install the following tools:
+MonadFind uses a smart contract to guarantee the safety of rewards:
+- **Reward escrow**: Funds are locked inside the contract safely until claimed.
+- **Transparent state**: All items and their statuses are publicly readable.
+- **Automatic payout**: The contract releases funds directly to the claimant without a middleman.
+- **No centralized server**: We don't hold the funds; the blockchain does.
+- **Verifiable transactions**: The entire lifecycle of an item is cryptographically secured.
 
--   [Node (>= v18.18)](https://nodejs.org/en/download/)
--   Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
--   [Git](https://git-scm.com/downloads)
+## Why Monad?
 
-## Quickstart
+MonadFind's smart contract is deployed on the Monad blockchain (Testnet), allowing it to process these item creation and claim transactions extremely quickly and efficiently.
 
-To get started, follow the steps below:
+## Tech Stack
 
-1. Clone this repo & install dependencies
+- Next.js
+- React
+- TypeScript
+- Solidity
+- Hardhat
+- Wagmi
+- Viem
+- RainbowKit
+- OpenZeppelin
+- Monad Testnet
 
-```sh
-git clone https://github.com/monad-developers/scaffold-eth-monad.git
+## Project Structure
+
+MonadFind consists of two main packages:
+- `packages/hardhat/contracts/MonadFind.sol`: The core smart contract.
+- `packages/hardhat/deploy/`: Deployment scripts.
+- `packages/hardhat/test/MonadFind.test.ts`: Smart contract tests verifying all functionality.
+- `packages/nextjs/app/`: The Next.js frontend pages (e.g. create, my-items, item details).
+- `packages/nextjs/components/`: Reusable React components.
+- `packages/nextjs/contracts/deployedContracts.ts`: The automatically generated ABI and deployed contract addresses.
+
+## Running locally
+
+To run MonadFind locally against the Monad Testnet:
+
+1. Clone the repository and install dependencies:
+```bash
+yarn install
 ```
 
-2. Open the project directory and install dependencies
-
-```sh
-cd scaffold-eth-monad && yarn install
-```
-
-2. Setup `.env` file for Hardhat:
-
-Make a copy of `.env.example` in `packages/hardhat` folder, name it `.env` and enter the respective values
-
-```
-DEPLOYER_PRIVATE_KEY=
-MONAD_RPC_URL=
-MONAD_CHAIN_ID=
-MONAD_EXPLORER_URL=
-```
-
-3. Deploying smart contracts on Monad:
-
-Once the `.env` file is setup, you can now run the below command in your terminal.
-
-```sh
-yarn deploy
-```
-
-This command deploys a test smart contract to the Monad testnet network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. Setup `.env` file for Next.js app (optional):
-
-Make a copy of `.env.example` in `packages/nextjs` folder, name it `.env` and enter the respective values
-
-```
-NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=
-```
-
-5. On a second terminal, start your NextJS app:
-
-```
+2. Start the Next.js development server:
+```bash
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+3. Open `http://localhost:3000` in your browser.
 
-**What's next**:
+*Note: The frontend will automatically connect to the already deployed MonadFind contract on the Monad Testnet.*
 
--   Edit your smart contract `YourContract.sol` in `packages/hardhat/contracts`
--   Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
--   Edit your deployment scripts in `packages/hardhat/deploy`
--   Edit your smart contract test in: `packages/hardhat/test`. To run test use `yarn hardhat:test`
+## Smart Contract
 
-## Documentation
+The `MonadFind.sol` smart contract includes:
+- `createItem`: Records item details, proof hash, and escrows the MON reward.
+- `claimItem`: Verifies the submitted secret against the proof hash, marks the item as RETURNED, and releases the MON reward to the claimant.
+- **Security features**: Reentrancy protection and double-payout protection are included.
 
-Visit our [docs](https://docs.monad.xyz) to learn how to start building with Monad.
+## Testing
 
-To know more about Scaffold-ETH features, check out their [website](https://scaffoldeth.io).
+The MonadFind smart contract test suite includes extensive testing for all flows.
+Run the tests with:
+```bash
+yarn workspace @monadfind/hardhat test
+```
+*(46/46 Hardhat tests passing successfully)*
+
+## Security
+
+- **Never commit private keys.**
+- **Never share seed phrases.**
+- **Ownership proof should remain private.** The smart contract verifies the submitted secret (which hashes to the proof), it does not verify physical ownership.
+- Testnet assets are used for development/demo. Please use the Monad Testnet for safe testing.
+
+## Open Source / Attribution
+
+This project uses open-source development infrastructure/components from the Scaffold-ETH-Monad ecosystem for Next.js, Wagmi integration, and Hardhat deployment. The application logic, `MonadFind.sol` smart contract, UI design, product concept, and user flows were all custom-built specifically for this MonadFind project.
